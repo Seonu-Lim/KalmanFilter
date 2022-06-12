@@ -12,7 +12,7 @@ class LowPassFilter():
         self.estimate = self.estimate * self.alpha + new_observation * (1-self.alpha)
 
 class KalmanFilter():
-    def __init__(self,initial_point,P,A,Q,H) :
+    def __init__(self,initial_point,P,A,Q,H,R) :
         self.observation = initial_point
         self.pred = initial_point
         self.estimate = initial_point
@@ -27,10 +27,19 @@ class KalmanFilter():
 
 
     def prediction(self) :
+        """
+        x : 3 by 1 (RGB)
+        A : 3 by 3
+        Q : 3 by 3 (covariance of noise of x)
+        """
         self.pred = np.dot(self.A,self.estimate)
         self.P_pred = multi_dot([self.A,self.P_est,self.A.T]) + self.Q
 
     def calculate_kalman_gain(self) :
+        """
+        H : 3 by 3
+        R : 3 by 3 (covariance of noise of observation)
+        """
         tm = multi_dot([self.H,self.P_pred,self.H.T]) + self.R
         self.K = multi_dot([self.P_pred,self.H.T,pinv(tm)])
 
